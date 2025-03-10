@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Primera Ley de Newton - Simulación</title>
+        <title>Primera Ley de Newton - Simulación con Vectores de Fuerza</title>
         <style>
             body {
                 font-family: Arial, sans-serif;
@@ -19,37 +19,61 @@
                 text-align: center;
             }
 
-            .container {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-
-            #simulacion {
-                width: 600px;
-                height: 200px;
-                border: 1px solid #ccc;
+            .simulador {
+                width: 700px;
+                height: 300px;
+                margin: 20px auto;
+                background-color: #f5f5f5;
+                border: 1px solid #ddd;
                 position: relative;
-                margin: 20px 0;
                 overflow: hidden;
-                background: #f5f5f5;
             }
 
-            #objeto {
-                width: 50px;
-                height: 50px;
+            .objeto {
+                width: 60px;
+                height: 60px;
                 background-color: #3498db;
                 position: absolute;
-                top: 75px;
-                left: 50px;
-                border-radius: 50%;
-                transition: left 0.5s linear;
+                top: 120px;
+                left: 100px;
+                border-radius: 8px;
+            }
+
+            .vector {
+                position: absolute;
+                height: 4px;
+                background-color: red;
+                transform-origin: left center;
+            }
+
+            .vector-text {
+                position: absolute;
+                font-size: 12px;
+                color: red;
+                font-weight: bold;
+            }
+
+            .vector-normal {
+                background-color: green;
+            }
+
+            .vector-normal-text {
+                color: green;
+            }
+
+            .vector-friccion {
+                background-color: orange;
+            }
+
+            .vector-friccion-text {
+                color: orange;
             }
 
             .controles {
                 display: flex;
+                justify-content: center;
                 gap: 10px;
-                margin-bottom: 30px;
+                margin: 20px 0;
             }
 
             button {
@@ -59,7 +83,6 @@
                 border: none;
                 border-radius: 4px;
                 cursor: pointer;
-                font-size: 16px;
             }
 
             button:hover {
@@ -68,138 +91,230 @@
 
             .explicacion {
                 background-color: #f8f9fa;
-                padding: 20px;
+                padding: 15px;
                 border-radius: 5px;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                margin-top: 20px;
             }
         </style>
     </head>
     <body>
-        <h1>Primera Ley de Newton</h1>
+        <h1>Simulación de la Primera Ley de Newton</h1>
+
         <div class="explicacion">
             <h2>Ley de Inercia</h2>
             <p>
-                La Primera Ley de Newton, también conocida como
-                <strong>Ley de Inercia</strong>, establece que:
+                La Primera Ley de Newton establece que un cuerpo permanecerá en
+                reposo o en movimiento rectilíneo uniforme a menos que actúe
+                sobre él una fuerza neta externa.
             </p>
-            <blockquote>
-                "Todo cuerpo persevera en su estado de reposo o movimiento
-                uniforme y rectilíneo a no ser que sea obligado a cambiar su
-                estado por fuerzas impresas sobre él."
-            </blockquote>
+            <p>En esta simulación, podrás observar cómo un objeto:</p>
+            <ul>
+                <li>
+                    Permanece en reposo cuando no hay fuerzas actuando sobre él
+                </li>
+                <li>
+                    Continúa moviéndose a velocidad constante después de recibir
+                    un impulso
+                </li>
+                <li>Se detiene cuando actúa sobre él una fuerza de fricción</li>
+            </ul>
             <p>
-                En otras palabras, un objeto en reposo permanecerá en reposo, y
-                un objeto en movimiento permanecerá en movimiento con la misma
-                velocidad y en la misma dirección, a menos que actúe sobre él
-                una fuerza externa.
+                Los vectores muestran las fuerzas que actúan sobre el objeto en
+                cada momento.
             </p>
         </div>
 
-        <div class="container">
-            <h2>Simulación</h2>
-            <div id="simulacion">
-                <div id="objeto"></div>
+        <div class="simulador" id="simulador">
+            <div class="objeto" id="objeto"></div>
+
+            <!-- Vectores de fuerza -->
+            <div class="vector" id="vector-fuerza"></div>
+            <div class="vector-text" id="vector-fuerza-text">F</div>
+
+            <div class="vector vector-normal" id="vector-normal"></div>
+            <div class="vector-text vector-normal-text" id="vector-normal-text">
+                N
             </div>
 
-            <div class="controles">
-                <button id="btnReposo">Objeto en Reposo</button>
-                <button id="btnMovimiento">Aplicar Impulso</button>
-                <button id="btnFriccion">Aplicar Fricción</button>
-                <button id="btnReset">Reiniciar</button>
+            <div class="vector vector-friccion" id="vector-friccion"></div>
+            <div
+                class="vector-text vector-friccion-text"
+                id="vector-friccion-text"
+            >
+                Fr
             </div>
+        </div>
 
-            <div class="explicacion">
-                <h3>Instrucciones:</h3>
-                <p>
-                    <strong>Objeto en Reposo:</strong> Muestra el objeto en
-                    estado de reposo.
-                </p>
-                <p>
-                    <strong>Aplicar Impulso:</strong> Aplica una fuerza inicial
-                    al objeto, que luego continuará moviéndose con velocidad
-                    constante (sin fricción).
-                </p>
-                <p>
-                    <strong>Aplicar Fricción:</strong> Introduce una fuerza
-                    externa (fricción) que disminuye la velocidad del objeto
-                    hasta detenerlo.
-                </p>
-                <p><strong>Reiniciar:</strong> Vuelve a la posición inicial.</p>
-            </div>
+        <div class="controles">
+            <button id="btn-reposo">Objeto en Reposo</button>
+            <button id="btn-impulso">Aplicar Impulso</button>
+            <button id="btn-friccion">Aplicar Fricción</button>
+            <button id="btn-mostrar-fuerzas">Mostrar/Ocultar Fuerzas</button>
         </div>
 
         <script>
+            // Elementos del DOM
             const objeto = document.getElementById("objeto");
-            const btnReposo = document.getElementById("btnReposo");
-            const btnMovimiento = document.getElementById("btnMovimiento");
-            const btnFriccion = document.getElementById("btnFriccion");
-            const btnReset = document.getElementById("btnReset");
+            const vectorFuerza = document.getElementById("vector-fuerza");
+            const vectorFuerzaText =
+                document.getElementById("vector-fuerza-text");
+            const vectorNormal = document.getElementById("vector-normal");
+            const vectorNormalText =
+                document.getElementById("vector-normal-text");
+            const vectorFriccion = document.getElementById("vector-friccion");
+            const vectorFriccionText = document.getElementById(
+                "vector-friccion-text",
+            );
 
-            let animacionId;
+            // Botones
+            const btnReposo = document.getElementById("btn-reposo");
+            const btnImpulso = document.getElementById("btn-impulso");
+            const btnFriccion = document.getElementById("btn-friccion");
+            const btnMostrarFuerzas = document.getElementById(
+                "btn-mostrar-fuerzas",
+            );
+
+            // Variables de estado
+            let posicion = 100;
             let velocidad = 0;
-            let posicion = 50;
+            let animacionId = null;
+            let mostrarFuerzas = true;
+            let friccionActiva = false;
 
+            // Factor de fricción (más pequeño = desaceleración más lenta)
+            const factorFriccion = 0.01;
+
+            // Función para actualizar posición del objeto
             function actualizarPosicion() {
                 posicion += velocidad;
 
-                // Verificar límites
-                if (posicion > 550) {
-                    posicion = 550;
+                // Limitar la posición dentro del simulador
+                if (posicion > 620) {
+                    posicion = 620;
                     velocidad = 0;
-                } else if (posicion < 0) {
-                    posicion = 0;
+                } else if (posicion < 20) {
+                    posicion = 20;
                     velocidad = 0;
                 }
 
+                // Aplicar fricción si está activa
+                if (friccionActiva && velocidad > 0) {
+                    velocidad -= factorFriccion;
+                    if (velocidad < 0) {
+                        velocidad = 0;
+                        friccionActiva = false;
+                        btnFriccion.disabled = false;
+                    }
+                }
+
+                // Actualizar la posición visual del objeto
                 objeto.style.left = posicion + "px";
 
-                // Si hay velocidad, seguir animando
-                if (velocidad !== 0) {
+                // Actualizar vectores para que se muevan junto con el objeto
+                actualizarVectores();
+
+                if (velocidad > 0) {
                     animacionId = requestAnimationFrame(actualizarPosicion);
+                } else {
+                    cancelAnimationFrame(animacionId);
+                    actualizarVectores();
                 }
             }
 
+            // Función para actualizar vectores de fuerza
+            function actualizarVectores() {
+                // Posición central del objeto
+                const objetoX = posicion + 30;
+                const objetoY = 150;
+
+                // Vector fuerza (impulso) - ahora se muestra delante del objeto
+                if (velocidad > 0 && !friccionActiva) {
+                    vectorFuerza.style.left = objetoX + 30 + "px"; // Delante del objeto
+                    vectorFuerza.style.top = objetoY + "px";
+                    vectorFuerza.style.width = "50px";
+                    vectorFuerza.style.transform = "rotate(0deg)";
+                    vectorFuerza.style.display = mostrarFuerzas
+                        ? "block"
+                        : "none";
+
+                    vectorFuerzaText.style.left = objetoX + 85 + "px";
+                    vectorFuerzaText.style.top = objetoY - 15 + "px";
+                    vectorFuerzaText.style.display = mostrarFuerzas
+                        ? "block"
+                        : "none";
+                } else {
+                    vectorFuerza.style.display = "none";
+                    vectorFuerzaText.style.display = "none";
+                }
+
+                // Vector normal (siempre presente)
+                vectorNormal.style.left = objetoX + "px";
+                vectorNormal.style.top = objetoY + "px";
+                vectorNormal.style.width = "40px";
+                vectorNormal.style.transform = "rotate(-90deg)";
+                vectorNormal.style.display = mostrarFuerzas ? "block" : "none";
+
+                vectorNormalText.style.left = objetoX - 5 + "px";
+                vectorNormalText.style.top = objetoY - 50 + "px";
+                vectorNormalText.style.display = mostrarFuerzas
+                    ? "block"
+                    : "none";
+
+                // Vector fricción (solo cuando se aplica fricción)
+                if (velocidad > 0 && friccionActiva) {
+                    vectorFriccion.style.left = objetoX - 30 + "px"; // Delante del objeto en sentido contrario
+                    vectorFriccion.style.top = objetoY + "px";
+                    vectorFriccion.style.width = "30px";
+                    vectorFriccion.style.transform = "rotate(180deg)";
+                    vectorFriccion.style.display = mostrarFuerzas
+                        ? "block"
+                        : "none";
+
+                    vectorFriccionText.style.left = objetoX - 75 + "px";
+                    vectorFriccionText.style.top = objetoY - 15 + "px";
+                    vectorFriccionText.style.display = mostrarFuerzas
+                        ? "block"
+                        : "none";
+                } else {
+                    vectorFriccion.style.display = "none";
+                    vectorFriccionText.style.display = "none";
+                }
+            }
+
+            // Eventos de botones
             btnReposo.addEventListener("click", () => {
                 cancelAnimationFrame(animacionId);
                 velocidad = 0;
-                posicion = 50;
+                posicion = 100;
+                friccionActiva = false;
                 objeto.style.left = posicion + "px";
+                btnFriccion.disabled = false;
+                actualizarVectores();
             });
 
-            btnMovimiento.addEventListener("click", () => {
+            btnImpulso.addEventListener("click", () => {
                 cancelAnimationFrame(animacionId);
-                velocidad = 2;
+                velocidad = 0.75; // Velocidad más lenta
+                friccionActiva = false;
+                btnFriccion.disabled = false;
                 animacionId = requestAnimationFrame(actualizarPosicion);
             });
 
             btnFriccion.addEventListener("click", () => {
-                // Aplicar fricción para disminuir la velocidad gradualmente
-                function aplicarFriccion() {
-                    if (velocidad > 0) {
-                        velocidad -= 0.05;
-                        if (velocidad < 0) velocidad = 0;
-
-                        posicion += velocidad;
-                        objeto.style.left = posicion + "px";
-
-                        if (velocidad > 0) {
-                            requestAnimationFrame(aplicarFriccion);
-                        }
-                    }
-                }
-
                 if (velocidad > 0) {
-                    cancelAnimationFrame(animacionId);
-                    aplicarFriccion();
+                    btnFriccion.disabled = true;
+                    friccionActiva = true;
+                    // No se cancela la animación, solo se activa la fricción
                 }
             });
 
-            btnReset.addEventListener("click", () => {
-                cancelAnimationFrame(animacionId);
-                velocidad = 0;
-                posicion = 50;
-                objeto.style.left = posicion + "px";
+            btnMostrarFuerzas.addEventListener("click", () => {
+                mostrarFuerzas = !mostrarFuerzas;
+                actualizarVectores();
             });
+
+            // Inicializar
+            actualizarVectores();
         </script>
     </body>
 </html>
