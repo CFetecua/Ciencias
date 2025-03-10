@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Primera Ley de Newton - Simulación</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+                line-height: 1.6;
+            }
+
+            h1,
+            h2 {
+                color: #2c3e50;
+                text-align: center;
+            }
+
+            .container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            #simulacion {
+                width: 600px;
+                height: 200px;
+                border: 1px solid #ccc;
+                position: relative;
+                margin: 20px 0;
+                overflow: hidden;
+                background: #f5f5f5;
+            }
+
+            #objeto {
+                width: 50px;
+                height: 50px;
+                background-color: #3498db;
+                position: absolute;
+                top: 75px;
+                left: 50px;
+                border-radius: 50%;
+                transition: left 0.5s linear;
+            }
+
+            .controles {
+                display: flex;
+                gap: 10px;
+                margin-bottom: 30px;
+            }
+
+            button {
+                padding: 10px 15px;
+                background-color: #2980b9;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 16px;
+            }
+
+            button:hover {
+                background-color: #3498db;
+            }
+
+            .explicacion {
+                background-color: #f8f9fa;
+                padding: 20px;
+                border-radius: 5px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Primera Ley de Newton</h1>
+        <div class="explicacion">
+            <h2>Ley de Inercia</h2>
+            <p>
+                La Primera Ley de Newton, también conocida como
+                <strong>Ley de Inercia</strong>, establece que:
+            </p>
+            <blockquote>
+                "Todo cuerpo persevera en su estado de reposo o movimiento
+                uniforme y rectilíneo a no ser que sea obligado a cambiar su
+                estado por fuerzas impresas sobre él."
+            </blockquote>
+            <p>
+                En otras palabras, un objeto en reposo permanecerá en reposo, y
+                un objeto en movimiento permanecerá en movimiento con la misma
+                velocidad y en la misma dirección, a menos que actúe sobre él
+                una fuerza externa.
+            </p>
+        </div>
+
+        <div class="container">
+            <h2>Simulación</h2>
+            <div id="simulacion">
+                <div id="objeto"></div>
+            </div>
+
+            <div class="controles">
+                <button id="btnReposo">Objeto en Reposo</button>
+                <button id="btnMovimiento">Aplicar Impulso</button>
+                <button id="btnFriccion">Aplicar Fricción</button>
+                <button id="btnReset">Reiniciar</button>
+            </div>
+
+            <div class="explicacion">
+                <h3>Instrucciones:</h3>
+                <p>
+                    <strong>Objeto en Reposo:</strong> Muestra el objeto en
+                    estado de reposo.
+                </p>
+                <p>
+                    <strong>Aplicar Impulso:</strong> Aplica una fuerza inicial
+                    al objeto, que luego continuará moviéndose con velocidad
+                    constante (sin fricción).
+                </p>
+                <p>
+                    <strong>Aplicar Fricción:</strong> Introduce una fuerza
+                    externa (fricción) que disminuye la velocidad del objeto
+                    hasta detenerlo.
+                </p>
+                <p><strong>Reiniciar:</strong> Vuelve a la posición inicial.</p>
+            </div>
+        </div>
+
+        <script>
+            const objeto = document.getElementById("objeto");
+            const btnReposo = document.getElementById("btnReposo");
+            const btnMovimiento = document.getElementById("btnMovimiento");
+            const btnFriccion = document.getElementById("btnFriccion");
+            const btnReset = document.getElementById("btnReset");
+
+            let animacionId;
+            let velocidad = 0;
+            let posicion = 50;
+
+            function actualizarPosicion() {
+                posicion += velocidad;
+
+                // Verificar límites
+                if (posicion > 550) {
+                    posicion = 550;
+                    velocidad = 0;
+                } else if (posicion < 0) {
+                    posicion = 0;
+                    velocidad = 0;
+                }
+
+                objeto.style.left = posicion + "px";
+
+                // Si hay velocidad, seguir animando
+                if (velocidad !== 0) {
+                    animacionId = requestAnimationFrame(actualizarPosicion);
+                }
+            }
+
+            btnReposo.addEventListener("click", () => {
+                cancelAnimationFrame(animacionId);
+                velocidad = 0;
+                posicion = 50;
+                objeto.style.left = posicion + "px";
+            });
+
+            btnMovimiento.addEventListener("click", () => {
+                cancelAnimationFrame(animacionId);
+                velocidad = 2;
+                animacionId = requestAnimationFrame(actualizarPosicion);
+            });
+
+            btnFriccion.addEventListener("click", () => {
+                // Aplicar fricción para disminuir la velocidad gradualmente
+                function aplicarFriccion() {
+                    if (velocidad > 0) {
+                        velocidad -= 0.05;
+                        if (velocidad < 0) velocidad = 0;
+
+                        posicion += velocidad;
+                        objeto.style.left = posicion + "px";
+
+                        if (velocidad > 0) {
+                            requestAnimationFrame(aplicarFriccion);
+                        }
+                    }
+                }
+
+                if (velocidad > 0) {
+                    cancelAnimationFrame(animacionId);
+                    aplicarFriccion();
+                }
+            });
+
+            btnReset.addEventListener("click", () => {
+                cancelAnimationFrame(animacionId);
+                velocidad = 0;
+                posicion = 50;
+                objeto.style.left = posicion + "px";
+            });
+        </script>
+    </body>
+</html>
